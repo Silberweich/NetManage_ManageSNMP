@@ -6,7 +6,7 @@ IP_RTABLE_OID = ""
 UDP_IN_OID = "1.3.6.1.2.1.7.1.0"
 UDP_OUT_OID = "1.3.6.1.2.1.7.4.0"
 
-class snmpConnection:
+class SNMPConnection:
     def __init__(self, ip, port, community) -> None:
         self.ip = ip
         self.port = port
@@ -82,7 +82,7 @@ def getSNMP(ip, port, oid, community):
 if __name__ == "__main__":
     getSNMP("10.99.1.2", "161", UDP_IN_OID, "management")
 
-    instance = snmpConnection("10.99.1.2", "161", "management")
+    instance = SNMPConnection("10.99.1.2", "161", "management")
     # print(instance.getSystemDesc())
     print(instance.getUDPInNow())
     # print(instance.getUDPOutNow())
