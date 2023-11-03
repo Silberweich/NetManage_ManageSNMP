@@ -1,8 +1,12 @@
 from pysnmp.entity.rfc3413.oneliner import cmdgen
+from pysnmp.hlapi import SnmpEngine, CommunityData, UdpTransportTarget,\
+                         ContextData, ObjectType, ObjectIdentity, nextCmd
 import time
 
+
 SYSTEM_OID = ".1.3.6.1.2.1.1.1.0"
-IP_RTABLE_OID = ""
+IP_RTABLE_OID = "iso.identified-organization.dod.internet.mgmt.mib-2.ip.ipRouteTable.ipRouteEntry"
+#"1.3.6.1.2.1.4.21.1.1"
 UDP_IN_OID = "1.3.6.1.2.1.7.1.0"
 UDP_OUT_OID = "1.3.6.1.2.1.7.4.0"
 
@@ -57,6 +61,12 @@ class SNMPConnection:
         
 # 1.3.6.1.2.1.1.5.0 "management"
 def getSNMP(ip, port, oid, community):
+#     >>> from 
+
+#  g = nextCmd(snmpDispatcher(),
+#              CommunityData('public'),
+#              UdpTransportTarget(('demo.snmplabs.com', 161)),
+#              ObjectType(ObjectIdentity('SNMPv2-MIB', 'sysDescr')))
     auth = cmdgen.CommunityData(community.replace('"', '').replace("'", ""))
 
     cmdGen = cmdgen.CommandGenerator()
@@ -77,12 +87,50 @@ def getSNMP(ip, port, oid, community):
         oid, val = i
         #print(i)
         print("Error Status:", errorStatus,type(i), "::", oid, "::", val, str(val), type(val))
-    
+
+def cbFun(sendRequestHandle, errorIndication, errorStatus, errorIndex,
+          varBindTable, cbCtx):
+    if errorIndication:
+        print(errorIndication)
+        return 1
+    if errorStatus:
+        print(errorStatus.prettyPrint())
+        return 1
+    for varBindRow in varBindTable:
+        for oid, val in varBindRow:
+            print('%s = %s' % (oid.prettyPrint(),
+                               val and val.prettyPrint() or '?'))
+
+def getNextSNMP(ip, port, oid, community):
+    print("entry")
+    cmd = cmdgen.CommandGenerator()
+    errorIndication, errorStatus, errorIndex, varBindTable = cmd.bulkCmd(  
+                cmdgen.CommunityData('test-agent', 'management'),  
+                cmdgen.UdpTransportTarget((ip, 161)),  
+                0, 
+                25, 
+                (1,3,6,1,2,1,4,21,1), # ipRouteTable
+            )
+
+    if errorIndication:
+        print (errorIndication)
+    else:
+        if errorStatus:
+            print (
+                errorStatus.prettyPrint(),
+                errorIndex and varBindTable[-1][int(errorIndex)-1] or '?'
+                )
+        else:
+            for varBindTableRow in varBindTable:
+                for name, val in varBindTableRow:
+                    print (name.prettyPrint(), val.prettyPrint())
+    print("exit")
+
 
 if __name__ == "__main__":
-    getSNMP("10.99.1.2", "161", UDP_IN_OID, "management")
+    getNextSNMP("10.99.1.2", "161", IP_RTABLE_OID, "management")
 
-    instance = SNMPConnection("10.99.1.2", "161", "management")
+    #instance = SNMPConnection("10.99.1.2", "161", "management")
     # print(instance.getSystemDesc())
-    print(instance.getUDPInNow())
+    #print(instance.getUDPInNow())
     # print(instance.getUDPOutNow())
