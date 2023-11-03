@@ -1,7 +1,9 @@
 import argparse
 import ipaddress
+import asyncio 
 from pysnmp import hlapi 
 from pysnmp.entity.rfc3413.oneliner import cmdgen
+
 
 # some resources
 # https://pysnmp.readthedocs.io/en/latest/docs/pysnmp-hlapi-tutorial.html
@@ -116,6 +118,36 @@ def getNextSNMP(ip, port, oid, community):
     #     print("Error Status:", errorStatus, "::\n  ", oid.prettyPrint(), "::\n  ", val.prettyPrint())
     # print("func 4")
 
+# Source: https://stackoverflow.com/questions/8643047/how-to-make-a-single-getnext-query-in-pysnmp
+def getNextSNMPStackOverflow(ip, port, oid, community):
+    print("Current OID", oid)
+    oidTuple = tuple(map(int, oid.split('.')))
+    print("OID Tuple", oidTuple)
+    cmdGen  = cmdgen.AsynCommandGenerator()
+    #print("Type:", type((1,3,6,1,2,1,7,4,0)))
+
+    cmdGen.nextCmd(
+    cmdgen.CommunityData(community.replace('"', '').replace("'", "")),
+    cmdgen.UdpTransportTarget((ip, port)),
+        (oidTuple,),
+        (cbFun, None))
+
+    cmdGen.snmpEngine.transportDispatcher.runDispatcher()
+
+def cbFun(sendRequestHandle, errorIndication, errorStatus, errorIndex,
+          varBindTable, cbCtx):
+    if errorIndication:
+        print(errorIndication)
+        return 1
+    if errorStatus:
+        print(errorStatus.prettyPrint())
+        return 1
+    for varBindRow in varBindTable:
+        for oid, val in varBindRow:
+            print('%s = %s' % (oid.prettyPrint(),
+                               val and val.prettyPrint() or '?'))
+
+
 ##### End of Functions#####
 
 if __name__ == '__main__':
@@ -123,13 +155,20 @@ if __name__ == '__main__':
     # debug
     print(args)
 
+    udpOutDatagramOID = "1.3.6.1.2.1.7.4.0"
+    ipRouteTableOID = "1.3.6.1.2.1.4.21"
     # start
+
     if not args.get and not args.get_next:
         print("runnning get on ::", args.oid, "::")
         getSNMP(args.ip, args.port, args.oid, args.community)
     elif args.get_next:
         print("runnning get next on ", args.oid, "::")
-        getNextSNMP(args.ip, args.port, args.oid, args.community)
+        #getNextSNMP(args.ip, args.port, args.oid, args.community)
+        getNextSNMPStackOverflow(args.ip, args.port, args.oid, args.community)
+        
     else:
         print("runnning get on ::", args.oid, "::")
         getSNMP(args.ip, args.port, args.oid, args.community)
+    
+    
