@@ -7,10 +7,10 @@ UDP_IN_OID = "1.3.6.1.2.1.7.1.0"
 UDP_OUT_OID = "1.3.6.1.2.1.7.4.0"
 
 class SNMPConnection:
-    def __init__(self, ip, port, community) -> None:
+    def __init__(self, name, ip, port, community) -> None:
         self.ip = ip
         self.port = port
-        # self.oid = None
+        self.name = name
         self.community = community
 
     # Internal method
@@ -79,10 +79,10 @@ def getSNMP(ip, port, oid, community):
         print("Error Status:", errorStatus,type(i), "::", oid, "::", val, str(val), type(val))
     
 
-if __name__ == "__main__":
-    getSNMP("10.99.1.2", "161", UDP_IN_OID, "management")
+# if __name__ == "__main__":
+#     getSNMP("10.99.1.2", "161", UDP_IN_OID, "management")
 
-    instance = SNMPConnection("10.99.1.2", "161", "management")
-    # print(instance.getSystemDesc())
-    print(instance.getUDPInNow())
-    # print(instance.getUDPOutNow())
+#     instance = SNMPConnection("10.99.1.2", "161", "management")
+#     # print(instance.getSystemDesc())
+#     print(instance.getUDPInNow())
+#     # print(instance.getUDPOutNow())
