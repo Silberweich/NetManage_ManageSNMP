@@ -44,4 +44,8 @@ if __name__ == "__main__":
     for device in deviceList:
         # print(device, listSNMPConn[device])
         listThreads.append(threading.Thread(target=storeDataIntervalWrapper, args=(60, listSNMPConn[device], listDBConn[device],)).start())
-    print("do what ever rn")
+
+    # Testing SNMP
+    testGetNext = SNMPConnection("getNext", "10.99.2.1", 161, "management")
+    print(testGetNext.__getSNMP().varBinds[0][1])
+    

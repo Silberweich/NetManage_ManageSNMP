@@ -2,8 +2,11 @@ from pysnmp.entity.rfc3413.oneliner import cmdgen
 import time
 
 SYSTEM_OID = ".1.3.6.1.2.1.1.1.0"
-IP_RTABLE_OID = ""
+# This entity's IP Routing table.
+IP_RTABLE_OID = "1.3.6.1.2.1.4.21" 
+# The total number of UDP datagrams delivered to UDP users.
 UDP_IN_OID = "1.3.6.1.2.1.7.1.0"
+# The total number of UDP datagrams sent from this entity.
 UDP_OUT_OID = "1.3.6.1.2.1.7.4.0"
 
 class SNMPConnection:
@@ -30,7 +33,7 @@ class SNMPConnection:
         return errorIndication, errorStatus, errorIndex, varBinds
     
     def __getNextSNMP(self, oid) -> tuple:
-        # TODO: implement an SNMP getNext function as a base
+        # TODO: implement an SNMP getNext function as a base, get next until the end of the table
         pass
 
     def getSystemDesc(self) -> str:
