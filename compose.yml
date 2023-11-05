@@ -32,7 +32,6 @@ services:
   restart: unless-stopped
   working_dir: /app
   volumes: 
-   - ./data/python:/app
    - ./requirements.txt:/app/requirements.txt
    - ./main.py:/app/main.py
    - ./src:/app/src
