@@ -40,6 +40,7 @@ def storeDataIntervalWrapper(interval: int, snmp:SNMPConnection, db:HandleInflux
         storeData(snmp, db)
         time.sleep(interval)
 
+## Run all kind of
 if __name__ == "__main__":
     for device in deviceList:
         # print(device, listSNMPConn[device])
@@ -47,5 +48,5 @@ if __name__ == "__main__":
 
     # Testing SNMP
     testGetNext = SNMPConnection("getNext", "10.99.2.1", 161, "management")
-    print(testGetNext.__getSNMP().varBinds[0][1])
+    print(testGetNext.getSystemDesc)
     
