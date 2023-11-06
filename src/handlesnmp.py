@@ -5,16 +5,18 @@ import time
 
 
 SYSTEM_OID = ".1.3.6.1.2.1.1.1.0"
-IP_RTABLE_OID = "iso.identified-organization.dod.internet.mgmt.mib-2.ip.ipRouteTable.ipRouteEntry"
-#"1.3.6.1.2.1.4.21.1.1"
+# This entity's IP Routing table.
+IP_RTABLE_OID = "1.3.6.1.2.1.4.21" 
+# The total number of UDP datagrams delivered to UDP users.
 UDP_IN_OID = "1.3.6.1.2.1.7.1.0"
+# The total number of UDP datagrams sent from this entity.
 UDP_OUT_OID = "1.3.6.1.2.1.7.4.0"
 
 class SNMPConnection:
-    def __init__(self, ip, port, community) -> None:
+    def __init__(self, name, ip, port, community) -> None:
         self.ip = ip
         self.port = port
-        # self.oid = None
+        self.name = name
         self.community = community
 
     # Internal method
@@ -34,7 +36,7 @@ class SNMPConnection:
         return errorIndication, errorStatus, errorIndex, varBinds
     
     def __getNextSNMP(self, oid) -> tuple:
-        # TODO: implement an SNMP getNext function as a base
+        # TODO: implement an SNMP getNext function as a base, get next until the end of the table
         pass
 
     def getSystemDesc(self) -> str:
