@@ -25,20 +25,20 @@ class HandleInfluxDB():
     # TODO: send UDP value to DataBase?
     # type should be UDP in, out.
     # in the db, in and out needs to be on different line of data.
-    def sendToDB(value, type) -> bool:
-        while True:
-    # random number 1.0-100.0
-            ran = random.uniform(1.0, 100.0)
-    # set time every 30 sec
-            time.sleep(30)
-    # write data to influxdb
-            p = influxdb_client.Point("2").tag("location", "Bangkok").field("temperature", ran)
-            write_api.write(bucket=bucket, org=org, record=p)
-            print(p)
-            return True
-    
-    # TODO: send UDP value to DataBase
-    def getFromDB(value) -> bool:
-
+    def sendToDBudp(Devicename, UDPin, UDPout) -> bool:
+        p = influxdb_client.Point(Devicename).tag("IP", Devicename).field("UDPin", UDPin)
+        write_api.write(bucket=bucket, org=org, record=p)
+        print(p)
+        p = influxdb_client.Point(Devicename).tag("IP", Devicename).field("UDPout", UDPout)
+        write_api.write(bucket=bucket, org=org, record=p)
+        print(p)
+        return True
+    def sendToDBiproutesystem(Devicename, Iproutetable, Systemdesc) -> bool:
+        p = influxdb_client.Point(Devicename).tag("IP", Devicename).field("Iproutetable", Iproutetable)
+        write_api.write(bucket=bucket, org=org, record=p)
+        print(p)
+        p = influxdb_client.Point(Devicename).tag("IP", Devicename).field("Systemdesc", Systemdesc)
+        write_api.write(bucket=bucket, org=org, record=p)
+        print(p)
         return True
     

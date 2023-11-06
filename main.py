@@ -45,9 +45,11 @@ def updateRoutingTable(snmp: SNMPConnection) -> None:
     pass
 
 def storeData(snmp:SNMPConnection, db:HandleInfluxDB) -> None:
+    
     udp_in = snmp.getUDPInNow
     udp_out = snmp.getUDPOutNow
-
+    devicename = "dog" #devicename from devicelist should be string
+    db.sendToDB()
     # db.storeDataToDB(udp_in, "type:in")
     # db.storeDataToDB(udp_out, "type:out")
 
