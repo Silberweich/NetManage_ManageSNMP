@@ -103,7 +103,21 @@ if __name__ == "__main__":
     #         #print(device, listSNMPConn[device])
     #         print(f"{i} device {device} in: {listSNMPConn[device].getUDPInNow()} | out: {listSNMPConn[device].getUDPOutNow()}")
 
-    # # Testing SNMP
-    # testGetNext = SNMPConnection("getNext", "10.99.2.1", 161, "management")
-    # print(testGetNext.getSystemDesc)
+    # Testing SNMP
+    print("\n Testing area")
+    # Local test
+    localTest = (SNMPConnection("local", "localhost", "161", "public"))
+    notlocalTest = (SNMPConnection("notlocal", "10.99.1.2", "161", "management"))
+
+    print(notlocalTest.getUDPInNow())
+    print(notlocalTest.getBulkTest())
+    print(localTest.getUDPInNow())
+    print(localTest.getBulkTest()
+
+    """
+    data1 = listSNMPConn["C2960SW"].getBulkTest()
+    with open('file.txt', 'w') as f:
+    # Define the data to be written
+        f.write(data1)
+    """
     

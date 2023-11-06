@@ -5,12 +5,14 @@ import time
 
 
 SYSTEM_OID = ".1.3.6.1.2.1.1.1.0"
-# This entity's IP Routing table.
-IP_RTABLE_OID = "1.3.6.1.2.1.4.21" 
-# The total number of UDP datagrams delivered to UDP users.
-UDP_IN_OID = "1.3.6.1.2.1.7.1.0"
-# The total number of UDP datagrams sent from this entity.
-UDP_OUT_OID = "1.3.6.1.2.1.7.4.0"
+UDP_IN_OID = "1.3.6.1.2.1.7.1.0"       # The total number of UDP datagrams delivered to UDP users.
+UDP_OUT_OID = "1.3.6.1.2.1.7.4.0"      # The total number of UDP datagrams sent from this entity.
+IP_RTABLE_OID = "1.3.6.1.2.1.4.21"     # This entity's IP Routing table.
+IP_ROUTE_DEST_OID = "1.3.6.1.2.1.4.21.1.1"
+IP_ROUTE_NEXT_HOP_OID = "1.3.6.1.2.1.4.21.1.7"
+IP_ROUTE_TYPE_OID = "1.3.6.1.2.1.4.21.1.8
+IP_ROUTE_PROTO_OID = "1.3.6.1.2.1.4.21.1.9"
+IP_ROUTE_AGE_OID = "1.3.6.1.2.1.4.21.1.10"
 
 class SNMPConnection:
     def __init__(self, name, ip, port, community) -> None:
@@ -37,7 +39,41 @@ class SNMPConnection:
     
     def __getNextSNMP(self, oid) -> tuple:
         # TODO: implement an SNMP getNext function as a base, get next until the end of the table
+        # Unused, switch to getBulkRequest
         pass
+
+    def __getBulkSNMP(self, oid):
+        print("Current OID", oid)
+        oidTuple = tuple(map(int, oid.split('.')))
+        print("OID Tuple", oidTuple)
+
+        print("entry")
+        cmd = cmdgen.CommandGenerator()
+        errorIndication, errorStatus, errorIndex, varBindTable = cmd.bulkCmd(  
+                    cmdgen.CommunityData('test-agent', self.community.replace('"', '').replace("'", "")),  
+                    cmdgen.UdpTransportTarget((self.ip, self.port)),  
+                    0, 
+                    25, 
+                    oidTuple, # ipRouteTable (1,3,6,1,2,1,4,21,1)
+                )
+
+        if errorIndication:
+            print (errorIndication)
+        else:
+            if errorStatus:
+                print (
+                    errorStatus.prettyPrint(),
+                    errorIndex and varBindTable[-1][int(errorIndex)-1] or '?'
+                    )
+            else: #Everything is print in this format
+                for varBindTableRow in varBindTable:
+                    for name, val in varBindTableRow:
+                        print (name.prettyPrint(), val.prettyPrint())
+                print("All data printed, exiting the function...")
+                
+        return varBindTable
+
+        
 
     def getSystemDesc(self) -> str:
         global SYSTEM_OID
@@ -58,8 +94,8 @@ class SNMPConnection:
         return value
 
     def getIPRouteTable(self) -> {}:
-        # TODO: do the shit
-        pass 
+        result = self.__getBulkSNMP(IP_RTABLE_OID)
+        return result
 
     def getName(self)-> str:
         return self.name   
