@@ -45,19 +45,19 @@ class SNMPConnection:
         oid, value = var[0]
         return value
 
-    def getUDPInNow(self) -> tuple[float, int]:
+    def getUDPInNow(self) -> int:
         global UDP_IN_OID
         err, errStatus, errIndex, var = self.__getSNMP(UDP_IN_OID)
         oid, value = var[0]
-        return time.time(), value
+        return value
 
-    def getUDPOutNow(self) -> tuple[float, int]:
+    def getUDPOutNow(self) -> int:
         global UDP_OUT_OID
         err, errStatus, errIndex, var = self.__getSNMP(UDP_OUT_OID)
         oid, value = var[0]
-        return time.time(), value
+        return value
 
-    def getIPRouteTable(self) -> []:
+    def getIPRouteTable(self) -> {}:
         # TODO: do the shit
         pass    
         

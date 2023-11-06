@@ -42,9 +42,13 @@ def storeDataIntervalWrapper(interval: int, snmp:SNMPConnection, db:HandleInflux
 
 ## Run all kind of
 if __name__ == "__main__":
+    # for device in deviceList:
+    #     # print(device, listSNMPConn[device])
+    #     listThreads.append(threading.Thread(target=storeDataIntervalWrapper, args=(60, listSNMPConn[device], listDBConn[device],)).start())
+
     for device in deviceList:
-        # print(device, listSNMPConn[device])
-        listThreads.append(threading.Thread(target=storeDataIntervalWrapper, args=(60, listSNMPConn[device], listDBConn[device],)).start())
+        print(device, listSNMPConn[device])
+        print(f"device {deviceList[device]}| stat: {listSNMPConn[device].getSystemDesc()} \n| in: {listSNMPConn[device].getUDPInNow()} | out: {listSNMPConn[device].getUDPOutNow()}")
 
     # Testing SNMP
     testGetNext = SNMPConnection("getNext", "10.99.2.1", 161, "management")
