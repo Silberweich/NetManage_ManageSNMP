@@ -18,14 +18,14 @@ write_api = client.write_api(write_options=SYNCHRONOUS)
 class HandleInfluxDB():
     def __init__(self, bucket, org, token, url):
         self.bucket = bucket
-        self.ort = org
+        self.org = org
         self.token = token
         self.url = url
     
     # TODO: send UDP value to DataBase?
     # type should be UDP in, out.
     # in the db, in and out needs to be on different line of data.
-    def sendToDBudp(Devicename, UDPin, UDPout) -> bool:
+    def sendToDBudp(self, Devicename, UDPin, UDPout) -> bool:
         p = influxdb_client.Point(Devicename).tag("IP", Devicename).field("UDPin", UDPin)
         write_api.write(bucket=bucket, org=org, record=p)
         print(p)
@@ -33,7 +33,7 @@ class HandleInfluxDB():
         write_api.write(bucket=bucket, org=org, record=p)
         print(p)
         return True
-    def sendToDBiproutesystem(Devicename, Iproutetable, Systemdesc) -> bool:
+    def sendToDBiproutesystem(self, Devicename, Iproutetable, Systemdesc) -> bool:
         p = influxdb_client.Point(Devicename).tag("IP", Devicename).field("Iproutetable", Iproutetable)
         write_api.write(bucket=bucket, org=org, record=p)
         print(p)

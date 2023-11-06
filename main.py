@@ -1,8 +1,21 @@
 from src.handledb import HandleInfluxDB
 from src.handlesnmp import SNMPConnection
+from influxdb_client.client.write_api import SYNCHRONOUS
+import influxdb_client
 import time
 import threading 
-
+bucket = "jeen"
+org = "jeen"
+token = "44KDRmqUmCSc6g5aRsL5nHXqxuVQGlmMQycnWkX4me3J6-QMbjXYaGMabYpSq5XvXxDPz_2gD7MCwS8WLfV3Hg=="
+# Store the URL of your InfluxDB instance
+url="http://localhost:8086"
+client = influxdb_client.InfluxDBClient(
+   url=url,
+   token=token,
+   org=org
+)
+# Write script
+write_api = client.write_api(write_options=SYNCHRONOUS)
 class DataProcessing:
     def __init__(self, devName:str, conn:SNMPConnection, db:HandleInfluxDB) -> None:
         self.devName = devName
@@ -32,8 +45,7 @@ class DataProcessing:
 
             if prev_in != None or prev_out != None:
                 print(f"{self.devName}: IN: {now_in - prev_in} | OUT: {now_out - prev_out} # per {interval} sec")
-                # self.db.sendUDPIN(now_in - prev_in)
-                # self.db.sendUDPOut()
+                self.db.sendToDBudp(self.devName, int(now_in - prev_in), int(now_out - prev_out))
 
             prev_in = now_in
             prev_out = now_out
@@ -55,7 +67,7 @@ listThreads = []
 for device in deviceList:
     listSNMPConn[device] = (SNMPConnection(device, deviceList[device], "161", "management"))
     # TODO: See this shit? implement a way to keep multiple database connection like this
-    listDBConn[device] = (HandleInfluxDB(device, deviceList[device], "thisatest", "whatever",))
+    listDBConn[device] = (HandleInfluxDB(bucket, org, token, url))
 
 # def initSysDescr(snmp:SNMPConnection) -> None:
 #     # TODO: Get system description for such device, and send to somewhere (NodeRed)
