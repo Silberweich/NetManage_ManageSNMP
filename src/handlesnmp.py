@@ -59,7 +59,10 @@ class SNMPConnection:
 
     def getIPRouteTable(self) -> {}:
         # TODO: do the shit
-        pass    
+        pass 
+
+    def getName(self)-> str:
+        return self.name   
         
 # 1.3.6.1.2.1.1.5.0 "management"
 def getSNMP(ip, port, oid, community):
