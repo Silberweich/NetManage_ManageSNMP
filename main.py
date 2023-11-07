@@ -4,6 +4,7 @@ from influxdb_client.client.write_api import SYNCHRONOUS
 import influxdb_client
 import time
 import threading 
+
 bucket = "jeen"
 org = "jeen"
 token = "44KDRmqUmCSc6g5aRsL5nHXqxuVQGlmMQycnWkX4me3J6-QMbjXYaGMabYpSq5XvXxDPz_2gD7MCwS8WLfV3Hg=="
@@ -91,9 +92,9 @@ for device in deviceList:
 
 ## Run all kind of
 if __name__ == "__main__":
-    print("doing your mom")
-    for device in deviceList:
-        listThreads.append(DataProcessing(device, listSNMPConn[device], listDBConn[device]))
+    # print("doing your mom")
+    # for device in deviceList:
+    #     listThreads.append(DataProcessing(device, listSNMPConn[device], listDBConn[device]))
     # for device in deviceList:
     #     # print(device, listSNMPConn[device])
     #     listThreads.append(threading.Thread(target=storeDataIntervalWrapper, args=(60, listSNMPConn[device], listDBConn[device],)).start())
@@ -106,14 +107,19 @@ if __name__ == "__main__":
     # Testing SNMP
     print("\n Testing area")
     # Local test
-    localTest = (SNMPConnection("local", "localhost", "161", "public"))
-    notlocalTest = (SNMPConnection("notlocal", "10.99.1.2", "161", "management"))
+    # localTest = (SNMPConnection("local", "localhost", "161", "public"))
+    notlocalTest = (SNMPConnection("notlocal", "192.168.100.2", "161", "management"))
 
     print(notlocalTest.getUDPInNow())
-    print(notlocalTest.getBulkTest())
-    print(localTest.getUDPInNow())
-    print(localTest.getBulkTest()
-
+    result_table = notlocalTest.getIPRouteDest()
+    #print(localTest.getUDPInNow())
+    #print(localTest.getBulkTest()
+    for i in range(0, 5):
+        for j in range(0, 4):
+            if(result_table[i][j]):
+                print(result_table[i][j], end=" ")
+            else:
+                pass
     """
     data1 = listSNMPConn["C2960SW"].getBulkTest()
     with open('file.txt', 'w') as f:

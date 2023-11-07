@@ -3,16 +3,21 @@ from pysnmp.hlapi import SnmpEngine, CommunityData, UdpTransportTarget,\
                          ContextData, ObjectType, ObjectIdentity, nextCmd
 import time
 
-
 SYSTEM_OID = ".1.3.6.1.2.1.1.1.0"
 UDP_IN_OID = "1.3.6.1.2.1.7.1.0"       # The total number of UDP datagrams delivered to UDP users.
 UDP_OUT_OID = "1.3.6.1.2.1.7.4.0"      # The total number of UDP datagrams sent from this entity.
 IP_RTABLE_OID = "1.3.6.1.2.1.4.21"     # This entity's IP Routing table.
 IP_ROUTE_DEST_OID = "1.3.6.1.2.1.4.21.1.1"
 IP_ROUTE_NEXT_HOP_OID = "1.3.6.1.2.1.4.21.1.7"
-IP_ROUTE_TYPE_OID = "1.3.6.1.2.1.4.21.1.8
+IP_ROUTE_TYPE_OID = "1.3.6.1.2.1.4.21.1.8"
 IP_ROUTE_PROTO_OID = "1.3.6.1.2.1.4.21.1.9"
 IP_ROUTE_AGE_OID = "1.3.6.1.2.1.4.21.1.10"
+
+IP_ROUTE_TABLE_ENT = ["1.3.6.1.2.1.4.21.1.1",
+"1.3.6.1.2.1.4.21.1.7",
+"1.3.6.1.2.1.4.21.1.8",
+"1.3.6.1.2.1.4.21.1.9",
+"1.3.6.1.2.1.4.21.1.10"]
 
 class SNMPConnection:
     def __init__(self, name, ip, port, community) -> None:
@@ -36,11 +41,7 @@ class SNMPConnection:
         )
 
         return errorIndication, errorStatus, errorIndex, varBinds
-    
-    def __getNextSNMP(self, oid) -> tuple:
-        # TODO: implement an SNMP getNext function as a base, get next until the end of the table
-        # Unused, switch to getBulkRequest
-        pass
+
 
     def __getBulkSNMP(self, oid):
         print("Current OID", oid)
@@ -52,8 +53,8 @@ class SNMPConnection:
         errorIndication, errorStatus, errorIndex, varBindTable = cmd.bulkCmd(  
                     cmdgen.CommunityData('test-agent', self.community.replace('"', '').replace("'", "")),  
                     cmdgen.UdpTransportTarget((self.ip, self.port)),  
-                    0, 
-                    25, 
+                    0, # From 0th record
+                    100, # to 100th record, unless the table is longer than that, this will end as is
                     oidTuple, # ipRouteTable (1,3,6,1,2,1,4,21,1)
                 )
 
@@ -66,10 +67,12 @@ class SNMPConnection:
                     errorIndex and varBindTable[-1][int(errorIndex)-1] or '?'
                     )
             else: #Everything is print in this format
+                """
                 for varBindTableRow in varBindTable:
                     for name, val in varBindTableRow:
-                        print (name.prettyPrint(), val.prettyPrint())
+                        print("Name", name.prettyPrint(), "Value", val.prettyPrint())
                 print("All data printed, exiting the function...")
+                """
                 
         return varBindTable
 
@@ -94,83 +97,81 @@ class SNMPConnection:
         return value
 
     def getIPRouteTable(self) -> {}:
-        result = self.__getBulkSNMP(IP_RTABLE_OID)
-        return result
+        # Get Everything from  
+        # IPRoutetable 1.3.6.1.2.1.4.21 Down to 1.3.6.1.2.1.4.21.1.10
+        
+        varBindTable = self.__getBulkSNMP(IP_RTABLE_OID)
+        
+        matched = []
+
+        for varBindTableRow in varBindTable:
+            for name, val in varBindTableRow:
+                print("Name", name.prettyPrint(), "Value", val.prettyPrint())
+                print("Test string", str(name))
+                print("type", type(name))
+                temp_text = str(name).strip()
+                print("Temp text", temp_text)
+                if "2.4.21.1." in temp_text:
+                    print("Match found:")
+                else:
+                    pass
+                
+        print("All data printed, exiting the function...")
+        
+        return matched
+    
+    def getIPRouteDest(self):
+        global IP_ROUTE_TABLE_ENT
+
+        w, h = 5, 4
+
+        table = [[0 for x in range(w)] for y in range(h)] 
+        table[0][0] = "IP ROUTE DEST"
+        table[0][1] = "NEXT HOP"
+        table[0][1] = "IP ROUTE TYPE"
+        table[0][2] = "IP ROUTE PROTO"
+        table[0][4] = "IP ROUTE AGE"
+
+        i = 1
+
+        for oid in IP_ROUTE_TABLE_ENT:
+            var = self.__getBulkSNMP(oid)
+            for varBindTableRow in var:
+                #print("varBindTableRow", varBindTableRow)
+                i = 1
+                for name, val in varBindTableRow:
+                    IP_ROUTE_TABLE_ENT.index(oid)
+                    table[i][IP_ROUTE_TABLE_ENT.index(oid)]
+                    i = i + 1
+                    print(val.prettyPrint())
+            print("-")
+
+
+        # varBindTable = self.__getBulkSNMP(IP_ROUTE_DEST_OID)
+        # varBindTable2 = self.__getBulkSNMP(IP_ROUTE_NEXT_HOP_OID)
+
+        # matched = []
+
+        # for varBindTableRow in varBindTable:
+        #     for name, val in varBindTableRow:
+        #         print(val.prettyPrint())
+        # for varBindTableRow in varBindTable2:
+        #     for name, val in varBindTableRow:
+        #         print(val.prettyPrint())
+        
+                
+        print("All data printed, exiting the function...")
+        
+        return table
+
 
     def getName(self)-> str:
         return self.name   
-        
-# 1.3.6.1.2.1.1.5.0 "management"
-def getSNMP(ip, port, oid, community):
-#     >>> from 
-
-#  g = nextCmd(snmpDispatcher(),
-#              CommunityData('public'),
-#              UdpTransportTarget(('demo.snmplabs.com', 161)),
-#              ObjectType(ObjectIdentity('SNMPv2-MIB', 'sysDescr')))
-    auth = cmdgen.CommunityData(community.replace('"', '').replace("'", ""))
-
-    cmdGen = cmdgen.CommandGenerator()
-
-    errorIndication, errorStatus, errorIndex, varBinds = cmdGen.getCmd(
-    auth,
-    cmdgen.UdpTransportTarget((ip, port)),
-    cmdgen.MibVariable(oid),
-    lookupMib=False,
-    )
-
-    # if errorIndication:
-    #     print(errorStatus, errorIndication, errorIndex, "error")
-    #     exit()
-    
-    for i in varBinds:
-        
-        oid, val = i
-        #print(i)
-        print("Error Status:", errorStatus,type(i), "::", oid, "::", val, str(val), type(val))
-
-def cbFun(sendRequestHandle, errorIndication, errorStatus, errorIndex,
-          varBindTable, cbCtx):
-    if errorIndication:
-        print(errorIndication)
-        return 1
-    if errorStatus:
-        print(errorStatus.prettyPrint())
-        return 1
-    for varBindRow in varBindTable:
-        for oid, val in varBindRow:
-            print('%s = %s' % (oid.prettyPrint(),
-                               val and val.prettyPrint() or '?'))
-
-def getNextSNMP(ip, port, oid, community):
-    print("entry")
-    cmd = cmdgen.CommandGenerator()
-    errorIndication, errorStatus, errorIndex, varBindTable = cmd.bulkCmd(  
-                cmdgen.CommunityData('test-agent', 'management'),  
-                cmdgen.UdpTransportTarget((ip, 161)),  
-                0, 
-                25, 
-                (1,3,6,1,2,1,4,21,1), # ipRouteTable
-            )
-
-    if errorIndication:
-        print (errorIndication)
-    else:
-        if errorStatus:
-            print (
-                errorStatus.prettyPrint(),
-                errorIndex and varBindTable[-1][int(errorIndex)-1] or '?'
-                )
-        else:
-            for varBindTableRow in varBindTable:
-                for name, val in varBindTableRow:
-                    print (name.prettyPrint(), val.prettyPrint())
-    print("exit")
 
 
 if __name__ == "__main__":
-    getNextSNMP("10.99.1.2", "161", IP_RTABLE_OID, "management")
-
+    pass
+    #getNextSNMP("10.99.1.2", "161", IP_RTABLE_OID, "management")
     #instance = SNMPConnection("10.99.1.2", "161", "management")
     # print(instance.getSystemDesc())
     #print(instance.getUDPInNow())
