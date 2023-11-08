@@ -114,12 +114,14 @@ if __name__ == "__main__":
     result_table = notlocalTest.getIPRouteDest()
     #print(localTest.getUDPInNow())
     #print(localTest.getBulkTest()
+    """
     for i in range(0, 5):
         for j in range(0, 4):
             if(result_table[i][j]):
                 print(result_table[i][j], end=" ")
             else:
                 pass
+    """
     """
     data1 = listSNMPConn["C2960SW"].getBulkTest()
     with open('file.txt', 'w') as f:

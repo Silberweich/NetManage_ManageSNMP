@@ -13,7 +13,8 @@ IP_ROUTE_TYPE_OID = "1.3.6.1.2.1.4.21.1.8"
 IP_ROUTE_PROTO_OID = "1.3.6.1.2.1.4.21.1.9"
 IP_ROUTE_AGE_OID = "1.3.6.1.2.1.4.21.1.10"
 
-IP_ROUTE_TABLE_ENT = ["1.3.6.1.2.1.4.21.1.1",
+IP_ROUTE_TABLE_ENT = [
+"1.3.6.1.2.1.4.21.1.1",
 "1.3.6.1.2.1.4.21.1.7",
 "1.3.6.1.2.1.4.21.1.8",
 "1.3.6.1.2.1.4.21.1.9",
@@ -123,7 +124,54 @@ class SNMPConnection:
     def getIPRouteDest(self):
         global IP_ROUTE_TABLE_ENT
 
-        w, h = 5, 4
+        varBindTable = self.__getBulkSNMP(IP_ROUTE_DEST_OID)
+
+        all_table = []
+
+        dest_table = []
+        nexthop_table = []
+        type_table = []
+        proto_table = []
+        age_table = []
+
+        i = 0
+
+        for oid in IP_ROUTE_TABLE_ENT:
+            var = self.__getBulkSNMP(oid)
+            temp_list = []
+            for varBindTableRow in var:
+                for name, val in varBindTableRow:
+                    #dest_table[i].append(val)
+                    temp_list.append(val)
+                    print(val.prettyPrint())
+            all_table.append(temp_list)
+            #i = i + 1
+            print("-")
+
+
+        print(all_table)
+                
+        print("All data printed, exiting the function...")
+        
+        return all_table
+
+
+    def getName(self)-> str:
+        return self.name   
+
+
+if __name__ == "__main__":
+    pass
+    #getNextSNMP("10.99.1.2", "161", IP_RTABLE_OID, "management")
+    #instance = SNMPConnection("10.99.1.2", "161", "management")
+    # print(instance.getSystemDesc())
+    #print(instance.getUDPInNow())
+    # print(instance.getUDPOutNow())
+
+"""
+# Unused func
+
+w, h = 5, 4
 
         table = [[0 for x in range(w)] for y in range(h)] 
         table[0][0] = "IP ROUTE DEST"
@@ -147,7 +195,8 @@ class SNMPConnection:
             print("-")
 
 
-        # varBindTable = self.__getBulkSNMP(IP_ROUTE_DEST_OID)
+
+  # varBindTable = self.__getBulkSNMP(IP_ROUTE_DEST_OID)
         # varBindTable2 = self.__getBulkSNMP(IP_ROUTE_NEXT_HOP_OID)
 
         # matched = []
@@ -159,20 +208,4 @@ class SNMPConnection:
         #     for name, val in varBindTableRow:
         #         print(val.prettyPrint())
         
-                
-        print("All data printed, exiting the function...")
-        
-        return table
-
-
-    def getName(self)-> str:
-        return self.name   
-
-
-if __name__ == "__main__":
-    pass
-    #getNextSNMP("10.99.1.2", "161", IP_RTABLE_OID, "management")
-    #instance = SNMPConnection("10.99.1.2", "161", "management")
-    # print(instance.getSystemDesc())
-    #print(instance.getUDPInNow())
-    # print(instance.getUDPOutNow())
+"""
