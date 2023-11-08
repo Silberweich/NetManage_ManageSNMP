@@ -7,7 +7,7 @@ import threading
 
 bucket = "jeen"
 org = "jeen"
-token = "44KDRmqUmCSc6g5aRsL5nHXqxuVQGlmMQycnWkX4me3J6-QMbjXYaGMabYpSq5XvXxDPz_2gD7MCwS8WLfV3Hg=="
+token = "yTW62Dky7JCHRPTeGzbQkIPM27z9kULBbaiXneJPNxxK4vM--EWWk3FiuEnbWJI8qbOn7_IjLwGLp5bRGbFvuQ=="
 # Store the URL of your InfluxDB instance
 url="http://localhost:8086"
 client = influxdb_client.InfluxDBClient(
@@ -93,8 +93,9 @@ for device in deviceList:
 ## Run all kind of
 if __name__ == "__main__":
     # print("doing your mom")
-    # for device in deviceList:
-    #     listThreads.append(DataProcessing(device, listSNMPConn[device], listDBConn[device]))
+    for device in deviceList:
+        listThreads.append(DataProcessing(device, listSNMPConn[device], listDBConn[device]))
+
     # for device in deviceList:
     #     # print(device, listSNMPConn[device])
     #     listThreads.append(threading.Thread(target=storeDataIntervalWrapper, args=(60, listSNMPConn[device], listDBConn[device],)).start())
@@ -104,22 +105,22 @@ if __name__ == "__main__":
     #         #print(device, listSNMPConn[device])
     #         print(f"{i} device {device} in: {listSNMPConn[device].getUDPInNow()} | out: {listSNMPConn[device].getUDPOutNow()}")
 
-    # Testing SNMP
-    print("\n Testing area")
-    # Local test
-    # localTest = (SNMPConnection("local", "localhost", "161", "public"))
-    notlocalTest = (SNMPConnection("notlocal", "192.168.100.2", "161", "management"))
+    # # Testing SNMP
+    # print("\n Testing area")
+    # # Local test
+    # # localTest = (SNMPConnection("local", "localhost", "161", "public"))
+    # notlocalTest = (SNMPConnection("notlocal", "192.168.100.2", "161", "management"))
 
-    print(notlocalTest.getUDPInNow())
-    result_table = notlocalTest.getIPRouteDest()
-    #print(localTest.getUDPInNow())
-    #print(localTest.getBulkTest()
-    for i in range(0, 5):
-        for j in range(0, 4):
-            if(result_table[i][j]):
-                print(result_table[i][j], end=" ")
-            else:
-                pass
+    # print(notlocalTest.getUDPInNow())
+    # result_table = notlocalTest.getIPRouteDest()
+    # #print(localTest.getUDPInNow())
+    # #print(localTest.getBulkTest()
+    # for i in range(0, 5):
+    #     for j in range(0, 4):
+    #         if(result_table[i][j]):
+    #             print(result_table[i][j], end=" ")
+    #         else:
+    #             pass
     """
     data1 = listSNMPConn["C2960SW"].getBulkTest()
     with open('file.txt', 'w') as f:
