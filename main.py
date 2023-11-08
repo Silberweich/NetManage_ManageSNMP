@@ -111,7 +111,13 @@ if __name__ == "__main__":
     notlocalTest = (SNMPConnection("notlocal", "192.168.100.2", "161", "management"))
 
     print(notlocalTest.getUDPInNow())
-    result_table = notlocalTest.getIPRouteDest()
+    all_table = notlocalTest.getIPRouteDest()
+    
+    oid_name_table = ["IP ROUTE DESTINATION", "IP ROUTE NEXT HOP", "IP ROUTE TYPE", "IP ROUTE PROTO", "IP ROUTE AGE"]
+    for i in range (5):
+        print("\n", oid_name_table[i])
+        for item in all_table[i]:
+            print(item)
     #print(localTest.getUDPInNow())
     #print(localTest.getBulkTest()
     """

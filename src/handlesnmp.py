@@ -142,7 +142,7 @@ class SNMPConnection:
             for varBindTableRow in var:
                 for name, val in varBindTableRow:
                     #dest_table[i].append(val)
-                    temp_list.append(val)
+                    temp_list.append(val.prettyPrint())
                     print(val.prettyPrint())
             all_table.append(temp_list)
             #i = i + 1
