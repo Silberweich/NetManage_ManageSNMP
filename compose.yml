@@ -13,18 +13,9 @@ services:
   environment:
    - DOCKER_INFLUXDB_INIT_MODE=setup
    - DOCKER_INFLUXDB_INIT_USERNAME=admin
-   - DOCKER_INFLUXDB_INIT_PASSWORD=supersecretpassword
-   - DOCKER_INFLUXDB_INIT_ORG=home
-   - DOCKER_INFLUXDB_INIT_BUCKET=home
- 
- nodered:
-  container_name: nodered
-  image: "nodered/node-red:latest-18-minimal"
-  restart: unless-stopped
-  volumes:
-   - ./data/nodered:/data
-  ports:
-   - 1880:1880
+   - DOCKER_INFLUXDB_INIT_PASSWORD=admin
+   - DOCKER_INFLUXDB_INIT_ORG=jeen
+   - DOCKER_INFLUXDB_INIT_BUCKET=jeen
  
  python:
   container_name: python-service
