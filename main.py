@@ -5,31 +5,26 @@ import influxdb_client
 import time
 import threading 
 
-bucket = "jeen"
-org = "jeen"
-token = "yTW62Dky7JCHRPTeGzbQkIPM27z9kULBbaiXneJPNxxK4vM--EWWk3FiuEnbWJI8qbOn7_IjLwGLp5bRGbFvuQ=="
-# Store the URL of your InfluxDB instance
-url="http://localhost:8086"
-client = influxdb_client.InfluxDBClient(
-   url=url,
-   token=token,
-   org=org
-)
-# Write script
-write_api = client.write_api(write_options=SYNCHRONOUS)
 class DataProcessing:
     def __init__(self, devName:str, conn:SNMPConnection, db:HandleInfluxDB) -> None:
         self.devName = devName
         self.conn = conn
         self.db = db
+
+        self.sendTableToDB()
+        self.sendSysDescToDB()
+
         thread = threading.Thread(target=self.getPPNToDB, args=(10,))
-        thread.daemon = False                            # Daemonize thread
+        thread.daemon = False                            
         thread.start() 
 
-    def sendTableToDB() -> None:
-        pass
-    def sendSysDescToDB() -> None:
-        pass
+    def sendTableToDB(self) -> None:
+        data = self.conn.getIPRouteDest()
+        self.db.sendToDBIPRouteTable(self.devName, data)
+        
+    def sendSysDescToDB(self) -> None:
+        data = self.conn.getSystemDesc()
+        self.db.sendToDBsystemDesc(self.devName, str(data))
 
     def getPPNToDB(self, interval:int) -> None:
         now_in = None
@@ -64,31 +59,17 @@ listSNMPConn = {}
 listDBConn = {}
 listThreads = []
 
+bucket = "jeen"
+org = "jeen"
+token = "X3CQyUr33EdVb9Vzwa-G7MWumwtPZ8uXG9rMXuPrNNSO4vFrPje2VVUcpg9AraSnDz-Gz-DKIV-7A1aQi126cA=="
+# Store the URL of your InfluxDB instance
+url="http://localhost:8086"
+
 # this part initialize classes for each device
 for device in deviceList:
     listSNMPConn[device] = (SNMPConnection(device, deviceList[device], "161", "management"))
     # TODO: See this shit? implement a way to keep multiple database connection like this
     listDBConn[device] = (HandleInfluxDB(bucket, org, token, url))
-
-# def initSysDescr(snmp:SNMPConnection) -> None:
-#     # TODO: Get system description for such device, and send to somewhere (NodeRed)
-#     pass
-
-# def updateRoutingTable(snmp: SNMPConnection) -> None:
-#     # TODO: Get IP Routing Table for such device (that has routing table), and send to somewhere (NodeRed)
-#     pass
-
-# def storeData(snmp:SNMPConnection, db:HandleInfluxDB) -> None:
-#     udp_in = snmp.getUDPInNow
-#     udp_out = snmp.getUDPOutNow
-
-#     # db.storeDataToDB(udp_in, "type:in")
-#     # db.storeDataToDB(udp_out, "type:out")
-
-# def storeDataIntervalWrapper(interval: int, snmp:SNMPConnection, db:HandleInfluxDB) -> None:
-#     while True:
-#         storeData(snmp, db)
-#         time.sleep(interval)
 
 ## Run all kind of
 if __name__ == "__main__":
@@ -112,15 +93,23 @@ if __name__ == "__main__":
     # notlocalTest = (SNMPConnection("notlocal", "192.168.100.2", "161", "management"))
 
     # print(notlocalTest.getUDPInNow())
-    # result_table = notlocalTest.getIPRouteDest()
-    # #print(localTest.getUDPInNow())
-    # #print(localTest.getBulkTest()
-    # for i in range(0, 5):
-    #     for j in range(0, 4):
-    #         if(result_table[i][j]):
-    #             print(result_table[i][j], end=" ")
-    #         else:
-    #             pass
+    # all_table = notlocalTest.getIPRouteDest()
+    
+    # oid_name_table = ["IP ROUTE DESTINATION", "IP ROUTE NEXT HOP", "IP ROUTE TYPE", "IP ROUTE PROTO", "IP ROUTE AGE"]
+    # for i in range (5):
+    #     print("\n")
+    #     for item in all_table[i]:
+    #         print(item)
+    #print(localTest.getUDPInNow())
+    #print(localTest.getBulkTest()
+    """
+    for i in range(0, 5):
+        for j in range(0, 4):
+            if(result_table[i][j]):
+                print(result_table[i][j], end=" ")
+            else:
+                pass
+    """
     """
     data1 = listSNMPConn["C2960SW"].getBulkTest()
     with open('file.txt', 'w') as f:
