@@ -73,47 +73,8 @@ for device in deviceList:
 
 ## Run all kind of
 if __name__ == "__main__":
-    # print("doing your mom")
+    print("Starting Program")
     for device in deviceList:
         listThreads.append(DataProcessing(device, listSNMPConn[device], listDBConn[device]))
 
-    # for device in deviceList:
-    #     # print(device, listSNMPConn[device])
-    #     listThreads.append(threading.Thread(target=storeDataIntervalWrapper, args=(60, listSNMPConn[device], listDBConn[device],)).start())
-
-    # for i in range(100):
-    #     for device in deviceList:
-    #         #print(device, listSNMPConn[device])
-    #         print(f"{i} device {device} in: {listSNMPConn[device].getUDPInNow()} | out: {listSNMPConn[device].getUDPOutNow()}")
-
-    # # Testing SNMP
-    # print("\n Testing area")
-    # # Local test
-    # # localTest = (SNMPConnection("local", "localhost", "161", "public"))
-    # notlocalTest = (SNMPConnection("notlocal", "192.168.100.2", "161", "management"))
-
-    # print(notlocalTest.getUDPInNow())
-    # all_table = notlocalTest.getIPRouteDest()
-    
-    # oid_name_table = ["IP ROUTE DESTINATION", "IP ROUTE NEXT HOP", "IP ROUTE TYPE", "IP ROUTE PROTO", "IP ROUTE AGE"]
-    # for i in range (5):
-    #     print("\n")
-    #     for item in all_table[i]:
-    #         print(item)
-    #print(localTest.getUDPInNow())
-    #print(localTest.getBulkTest()
-    """
-    for i in range(0, 5):
-        for j in range(0, 4):
-            if(result_table[i][j]):
-                print(result_table[i][j], end=" ")
-            else:
-                pass
-    """
-    """
-    data1 = listSNMPConn["C2960SW"].getBulkTest()
-    with open('file.txt', 'w') as f:
-    # Define the data to be written
-        f.write(data1)
-    """
     
